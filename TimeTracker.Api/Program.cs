@@ -52,9 +52,29 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (!await db.Users.AnyAsync())
+    {
+        var seedEmail = builder.Configuration["Auth:SeedUserEmail"];
+        var seedPassword = builder.Configuration["Auth:SeedUserPassword"];
+
+        if (!string.IsNullOrEmpty(seedEmail) && !string.IsNullOrEmpty(seedPassword))
+        {
+            db.Users.Add(new TimeTracker.Api.Models.User
+            {
+                Email = seedEmail,
+                PasswordHash = PasswordHasher.Hash(seedPassword)
+            });
+            await db.SaveChangesAsync();
+        }
+    }
+}
 
 app.Run();
