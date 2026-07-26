@@ -8,6 +8,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Client> Clients => Set<Client>();
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<TimeEntry> TimeEntries => Set<TimeEntry>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,5 +23,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<Project>()
             .Property(p => p.DefaultHourlyRate)
             .HasPrecision(10, 2);
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
     }
 }
