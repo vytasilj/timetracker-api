@@ -9,6 +9,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<TimeEntry> TimeEntries => Set<TimeEntry>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<ProjectRate> ProjectRates => Set<ProjectRate>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -20,9 +21,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .Property(t => t.HourlyRateOverride)
             .HasPrecision(10, 2);
 
-        modelBuilder.Entity<Project>()
-            .Property(p => p.DefaultHourlyRate)
+        modelBuilder.Entity<ProjectRate>()
+            .Property(r => r.HourlyRate)
             .HasPrecision(10, 2);
+
+        modelBuilder.Entity<ProjectRate>()
+            .HasIndex(r => new { r.ProjectId, r.EffectiveFrom })
+            .IsUnique();
 
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)

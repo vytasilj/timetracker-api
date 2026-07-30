@@ -18,6 +18,7 @@ public class TimeEntriesController(AppDbContext db) : ControllerBase
     {
         var entries = await db.TimeEntries
             .Include(t => t.Project)
+            .ThenInclude(p => p!.Rates)
             .OrderByDescending(t => t.Date)
             .ToListAsync();
 
@@ -29,6 +30,7 @@ public class TimeEntriesController(AppDbContext db) : ControllerBase
     {
         var entry = await db.TimeEntries
             .Include(t => t.Project)
+            .ThenInclude(p => p!.Rates)
             .FirstOrDefaultAsync(t => t.Id == id);
 
         if (entry is null) return NotFound();
@@ -69,7 +71,9 @@ public class TimeEntriesController(AppDbContext db) : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, UpdateTimeEntryDto dto)
     {
-        var entry = await db.TimeEntries.Include(t => t.Project).FirstOrDefaultAsync(t => t.Id == id);
+        var entry = await db.TimeEntries.Include(t => t.Project)
+            .ThenInclude(p => p!.Rates)
+            .FirstOrDefaultAsync(t => t.Id == id);
         if (entry is null) return NotFound();
 
         var hours = TimeEntryCalculator.CalculateHours(dto.Hours, dto.StartTime, dto.EndTime, dto.DeductLunchBreak);

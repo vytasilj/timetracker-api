@@ -19,5 +19,5 @@ public class TimeEntry
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    public decimal EffectiveHourlyRate => HourlyRateOverride ?? Project?.DefaultHourlyRate ?? 0;
+    public decimal EffectiveHourlyRate => HourlyRateOverride ?? Project?.GetRateForDate(Date) ?? 0;
 }

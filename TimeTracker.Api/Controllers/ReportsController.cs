@@ -30,6 +30,8 @@ public class ReportsController(AppDbContext db) : ControllerBase
         var entries = await db.TimeEntries
             .Include(t => t.Project)
             .ThenInclude(p => p!.Client)
+            .Include(t => t.Project)
+            .ThenInclude(p => p!.Rates)
             .Where(t => t.Date >= startDate && t.Date < endDate)
             .ToListAsync();
 
