@@ -54,7 +54,7 @@ public class TimeEntriesController(AppDbContext db) : ControllerBase
             StartTime = dto.StartTime,
             EndTime = dto.EndTime,
             DeductLunchBreak = dto.DeductLunchBreak,
-            Hours = Math.Round(hours, 2, MidpointRounding.AwayFromZero),
+            Hours = hours.HasValue ? Math.Round(hours.Value, 2, MidpointRounding.AwayFromZero) : null,
             HourlyRateOverride = dto.HourlyRateOverride,
             Description = dto.Description
         };
@@ -78,7 +78,7 @@ public class TimeEntriesController(AppDbContext db) : ControllerBase
         entry.StartTime = dto.StartTime;
         entry.EndTime = dto.EndTime;
         entry.DeductLunchBreak = dto.DeductLunchBreak;
-        entry.Hours = Math.Round(hours, 2, MidpointRounding.AwayFromZero);
+        entry.Hours = hours.HasValue ? Math.Round(hours.Value, 2, MidpointRounding.AwayFromZero) : null;
         entry.HourlyRateOverride = dto.HourlyRateOverride;
         entry.Description = dto.Description;
         entry.UpdatedAt = DateTime.UtcNow;

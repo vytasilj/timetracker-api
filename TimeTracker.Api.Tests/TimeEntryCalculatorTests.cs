@@ -66,13 +66,26 @@ public class TimeEntryCalculatorTests
     }
 
     [Fact]
-    public void CalculateHours_WithoutHoursOrStartEnd_ThrowsInvalidOperationException()
+    public void CalculateHours_WithOnlyStartTime_ReturnsNull()
     {
-        Assert.Throws<InvalidOperationException>(() =>
-            TimeEntryCalculator.CalculateHours(
-                hoursOverride: null,
-                startTime: null,
-                endTime: null,
-                deductLunchBreak: false));
+        var result = TimeEntryCalculator.CalculateHours(
+            hoursOverride: null,
+            startTime: new TimeOnly(8, 0),
+            endTime: null,
+            deductLunchBreak: false);
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void CalculateHours_WithNothingProvided_ReturnsNull()
+    {
+        var result = TimeEntryCalculator.CalculateHours(
+            hoursOverride: null,
+            startTime: null,
+            endTime: null,
+            deductLunchBreak: false);
+
+        Assert.Null(result);
     }
 }

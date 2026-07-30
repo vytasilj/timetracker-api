@@ -10,7 +10,7 @@ public record TimeEntryDto(
     TimeOnly? StartTime,
     TimeOnly? EndTime,
     bool DeductLunchBreak,
-    decimal Hours,
+    decimal? Hours,
     decimal? HourlyRateOverride,
     decimal EffectiveHourlyRate,
     string? Description
@@ -30,16 +30,22 @@ public record CreateTimeEntryDto(
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         var hasHours = Hours.HasValue;
-        var hasStartEnd = StartTime.HasValue && EndTime.HasValue;
+        var hasStart = StartTime.HasValue;
+        var hasEnd = EndTime.HasValue;
 
-        if (!hasHours && !hasStartEnd)
+        if (!hasHours && !hasStart)
         {
             yield return new ValidationResult(
-                "You must provide either Hours, or both StartTime and EndTime.",
-                [nameof(Hours), nameof(StartTime), nameof(EndTime)]);
+                "You must provide either Hours, or at least a StartTime (EndTime is optional for an in-progress entry).",
+                [nameof(Hours), nameof(StartTime)]);
         }
 
-        if (!hasHours && hasStartEnd)
+        if (hasEnd && !hasStart)
+        {
+            yield return new ValidationResult("EndTime cannot be set without a StartTime.", [nameof(StartTime)]);
+        }
+
+        if (!hasHours && hasStart && hasEnd)
         {
             if (EndTime <= StartTime)
             {
@@ -74,18 +80,39 @@ public record UpdateTimeEntryDto(
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         var hasHours = Hours.HasValue;
-        var hasStartEnd = StartTime.HasValue && EndTime.HasValue;
+        var hasStart = StartTime.HasValue;
+        var hasEnd = EndTime.HasValue;
 
-        if (!hasHours && !hasStartEnd)
+        if (!hasHours && !hasStart)
         {
             yield return new ValidationResult(
-                "You must provide either Hours, or both StartTime and EndTime.",
-                [nameof(Hours), nameof(StartTime), nameof(EndTime)]);
+                "You must provide either Hours, or at least a StartTime (EndTime is optional for an in-progress entry).",
+                [nameof(Hours), nameof(StartTime)]);
         }
 
-        if (!hasHours && hasStartEnd && EndTime <= StartTime)
+        if (hasEnd && !hasStart)
         {
-            yield return new ValidationResult("EndTime must be after StartTime.", [nameof(EndTime)]);
+            yield return new ValidationResult("EndTime cannot be set without a StartTime.", [nameof(StartTime)]);
+        }
+
+        if (!hasHours && hasStart && hasEnd)
+        {
+            if (EndTime <= StartTime)
+            {
+                yield return new ValidationResult("EndTime must be after StartTime.", [nameof(EndTime)]);
+            }
+            else
+            {
+                var duration = EndTime!.Value.ToTimeSpan() - StartTime!.Value.ToTimeSpan();
+                if (DeductLunchBreak) duration -= TimeSpan.FromMinutes(30);
+
+                if (duration <= TimeSpan.Zero)
+                {
+                    yield return new ValidationResult(
+                        "After deducting the lunch break, the resulting duration is zero or negative.",
+                        [nameof(DeductLunchBreak)]);
+                }
+            }
         }
     }
 }

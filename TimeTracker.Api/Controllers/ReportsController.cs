@@ -42,8 +42,8 @@ public class ReportsController(AppDbContext db) : ControllerBase
                     .Select(projectGroup => new ProjectSummaryDto(
                         projectGroup.Key.Id,
                         projectGroup.Key.Name,
-                        projectGroup.Sum(t => t.Hours),
-                        Math.Round(projectGroup.Sum(t => t.Hours * t.EffectiveHourlyRate), 2)
+                        projectGroup.Sum(t => t.Hours ?? 0),
+                        Math.Round(projectGroup.Sum(t => (t.Hours ?? 0) * t.EffectiveHourlyRate), 2)
                     ))
                     .OrderBy(p => p.ProjectName)
                     .ToList();
