@@ -1,25 +1,30 @@
 # Time Tracker API
 
+![CI](https://github.com/vytasilj/timetracker-api/actions/workflows/ci.yml/badge.svg)
+
 A time tracking and invoicing API built for freelance/contract work. Built to replace spreadsheet-based hour tracking with a structured client → project → time entry data model, plus automatic monthly earnings reports.
 
 Frontend: [timetracker-app](https://github.com/vytasilj/timetracker-app)
 
 ## Features
 
-- Client / Project / Time Entry management (CRUD)
-- Flexible time logging: enter hours directly, or start/end time with automatic 30-minute lunch break deduction
-- Per-entry hourly rate overrides (falls back to the project's default rate)
+- Client / Project / Time Entry management, including editing
+- Project rate history: hourly rates change over time with effective dates, and past time entries always resolve to the rate that was actually in effect on that date — changing a project's current rate never retroactively alters historical earnings
+- Flexible time logging: enter hours directly, or start/end time with automatic 30-minute lunch break deduction; entries can also be logged "in progress" (start time only) and completed later
+- Per-entry hourly rate overrides
 - Monthly summary report, grouped by client and project
 - JWT authentication with PBKDF2 password hashing
 - Fully containerized with Docker, deployed to Railway
+- CI pipeline runs the full test suite on every push and pull request
 
 ## Tech stack
 
 - .NET 10 / ASP.NET Core Web API
 - Entity Framework Core + PostgreSQL
 - JWT Bearer authentication
-- xUnit (unit tests for time calculation logic)
+- xUnit (unit tests for time and rate calculation logic)
 - Docker (multi-stage build)
+- GitHub Actions (CI)
 - Scalar for interactive API documentation (development only)
 
 ## Getting started
