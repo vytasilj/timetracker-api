@@ -28,6 +28,7 @@ builder.Services.AddOpenApi(options =>
 });
 
 builder.Services.AddSingleton<JwtTokenGenerator>();
+builder.Services.AddScoped<RefreshTokenService>();
 
 var jwtSecretKey = builder.Configuration["Jwt:SecretKey"]
     ?? throw new InvalidOperationException("Jwt:SecretKey is not configured.");
@@ -57,7 +58,8 @@ builder.Services.AddCors(options =>
                 "https://vytasilj.github.io"
               )
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
