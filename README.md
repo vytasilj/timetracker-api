@@ -14,7 +14,7 @@ Frontend: [timetracker-app](https://github.com/vytasilj/timetracker-app)
 - Per-entry hourly rate overrides
 - Monthly summary report, grouped by client and project
 - JWT authentication with PBKDF2 password hashing
-- Fully containerized with Docker, deployed to Railway
+- Fully containerized with Docker, deployed to Render + Neon
 - CI pipeline runs the full test suite on every push and pull request
 
 ## Tech stack
@@ -65,4 +65,6 @@ dotnet test
 
 ## Deployment
 
-Deployed to [Railway](https://railway.app) via Docker, with a managed PostgreSQL instance. Migrations are applied manually against the production database using `dotnet ef database update --connection "..."`.
+- **API**: Hosted as a Docker Web Service on [Render](https://render.com).
+- **Database**: Managed Serverless PostgreSQL instance on [Neon](https://neon.tech).
+- **Migrations**: EF Core migrations are automatically applied at startup on container boot.
